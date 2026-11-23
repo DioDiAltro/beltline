@@ -9,11 +9,12 @@ The plan that the factory runs: tasks a cheap agent can execute without guessing
 decide, plus the contract that lets the job run without interrupting the user.
 
 If the superpowers plugin is installed, write the plan with `superpowers:writing-plans` and then add the fields below
-to every task; its code snippets may stay as guidance, but the fields below win where they disagree, and the plan stays
-where writing-plans saved it (the ledger records that path). When writing-plans asks how to execute, the answer is: with `beltline:capo`, after the contract. Do not
+to every task; its code snippets may stay as guidance, but the fields below win where they disagree, and the plan is saved
+as `plan.md` in the job folder, not where writing-plans would put it. When writing-plans asks how to execute, the answer is: with `beltline:capo`, after the contract. Do not
 use `executing-plans` or `subagent-driven-development`.
 
-Without superpowers, write it by hand in `docs/projects/YYYY-MM-DD-<name>-plan.md`.
+Without superpowers, write it by hand. Either way the plan is `docs/beltline/YYYY-MM-DD-<slug>/plan.md`, in the same
+job folder as the design, with the header described in `beltline:design` (`beltline: plan`, `status: active`).
 
 ## At the top of the plan
 
@@ -52,6 +53,7 @@ Decide now what would otherwise block later. Propose values; the user corrects t
 | Working branch | a branch for the job, or the one the project uses for previews |
 | Allowed at the end (yes/no each) | commit yes; push to the working branch; merge into other branches no; preview build; publish no |
 | Already allowed | web search; new libraries no; external services no; database migrations no; deleting files no |
+| Cleanup at the end | `ask`: `beltline:sweep` shows what it would remove and waits; `yes`: it removes after its checks |
 | If something blocks | skip that check, log it, say it in the summary |
 
 What is not in the contract does not happen during the job.

@@ -1,7 +1,7 @@
 {
   "name": "beltline",
   "displayName": "Beltline",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "An agent assembly line for Claude Code: design the job with the user until the go, then cheap-first agents build, machines and fresh reviewers verify, hooks block the dangerous moves, and every job leaves lessons.",
   "author": {
     "name": "Giuseppe Zolli"

@@ -27,7 +27,7 @@ All in `.capo/` at the repository root (add `.capo/` to `.gitignore` if it is no
 
 ```
 # <job name>
-Date: YYYY-MM-DD · Design: <path> · Plan: <path>
+Job: YYYY-MM-DD-<slug> · Folder: docs/beltline/YYYY-MM-DD-<slug>/
 Contract: <the contract table, copied>
 Remote branch at start: <commit>
 

@@ -8,8 +8,26 @@ description: Use when a coding job needs to be understood and designed with the 
 Turn a rough request into a design document the user approved. Questions happen here, so the build can run without
 them.
 
-If the superpowers plugin is installed, run `superpowers:brainstorming` as it is and stop when it would hand over to
-its own planning: the plan is `beltline:schematic`. Without superpowers, follow the steps below.
+If the superpowers plugin is installed, run `superpowers:brainstorming` as it is, but save its design document as
+`design.md` in the job folder (below) instead of its own folder, and stop when it would hand over to its own planning:
+the plan is `beltline:schematic`. Without superpowers, follow the steps below.
+
+## The job folder
+
+Every Beltline job keeps its documents in one folder: `docs/beltline/YYYY-MM-DD-<slug>/` (date of the start, slug in
+kebab-case, the same name as the job in the ledger). Inside: `design.md` and `plan.md`. Each starts with:
+
+```
+---
+beltline: design | plan
+job: YYYY-MM-DD-<slug>
+status: active | done
+---
+```
+
+Nothing else goes in that folder, and Beltline documents go nowhere else: this is what lets `beltline:sweep` remove a
+finished job safely. The capo sets `status: done` when the job ends.
+
 
 ## Steps
 
@@ -23,7 +41,7 @@ its own planning: the plan is `beltline:schematic`. Without superpowers, follow 
 5. **Play back** each part you understood in a few lines ("I understood: ..."), then move on.
 6. **Ways to build it.** In a message of its own: two or three ways, what each costs, which one you recommend. If the
    choice is genuinely hard, run `beltline:council` first and show its synthesis. The user picks.
-7. **Write the design document** in `docs/projects/YYYY-MM-DD-<name>.md` (or where the project keeps them):
+7. **Write the design document** as `docs/beltline/YYYY-MM-DD-<slug>/design.md`, with the header above:
    - why, goals, non-goals, what would be a failure even if it works;
    - constraints (from the user and the project instructions);
    - the ways considered and the one chosen;

@@ -12,8 +12,8 @@ Come in un gioco di fabbriche, è fatta di macchine separate collegate da nastri
 un hook, e si può usare anche da sola.
 
 ```
- design ──► schematic ──► VIA ──► recruit ──► worker ──► verify ──► ledger ──► lessons
-(parlare)   (piano)              (assumere) (costruire) (controllo) (magazzino) (imparare)
+ design ──► schematic ──► VIA ──► recruit ──► worker ──► verify ──► ledger ──► lessons ──► sweep
+(parlare)   (piano)              (assumere) (costruire) (controllo) (magazzino) (imparare)  (pulizia)
      ▲ council (scelte difficili)        simplifier         scout · reviewer · cacciatori
                   muri: guard-bash · guard-files · done-gate · cost-meter
 ```
@@ -49,6 +49,7 @@ Le skill e gli agenti sono scritti in inglese, ma Claude parla con te nella tua 
 | `verify` | skill | Macchine → esploratore → revisione con due verdetti; l'autore non si rivede mai da solo |
 | `ledger` | skill | I file in `.capo/` che sopravvivono ai riassunti; ripresa; costi |
 | `lessons` | skill | Trasforma errori, correzioni e costi in regole brevi |
+| `sweep` | skill | Toglie documenti, file di `.capo`, worktree e rami dei lavori che risultano finiti; tiene un indice |
 | `worker` | agente | Costruisce un compito, prima il test, dentro il suo perimetro |
 | `scout` | agente | Cerca senza modificare; usa il grafo del codice (graphify) se c'è |
 | `reviewer` | agente | Revisione a contesto pulito: ha fatto ciò che era chiesto, è fatto bene |
@@ -63,6 +64,12 @@ Le skill e gli agenti sono scritti in inglese, ma Claude parla con te nella tua 
 I muri valgono solo per gli agenti del kit: tu e la tua sessione principale non venite mai bloccati. Solo la sessione
 principale crea agenti e unisce i rami, perché in Claude Code un sottoagente non può crearne altri: una gerarchia di
 «capireparto» non partirebbe, quindi i lavori grandi si dividono in zone fatte una dopo l'altra.
+
+## Dove vanno i documenti
+
+Ogni lavoro tiene progetto e piano in `docs/beltline/AAAA-MM-GG-<nome>/`, con in cima `status: active | done`.
+Quando il lavoro è finito e controllato, `sweep` toglie la cartella (chiedendo prima, se il contratto non dice sì) e
+aggiunge una riga in `docs/beltline/INDEX.md` con il commit da cui recuperarla.
 
 ## Modelli
 

@@ -12,8 +12,8 @@ Like a factory game, it is made of separate machines connected by belts. Each ma
 you can use them on their own.
 
 ```
- design ──► schematic ──► GO ──► recruit ──► worker ──► verify ──► ledger ──► lessons
-  (talk)      (plan)              (hire)     (build)    (check)    (store)    (learn)
+ design ──► schematic ──► GO ──► recruit ──► worker ──► verify ──► ledger ──► lessons ──► sweep
+  (talk)      (plan)              (hire)     (build)    (check)    (store)    (learn)     (clean)
      ▲ council (hard choices)            simplifier       scout · reviewer · hunters
                      walls: guard-bash · guard-files · done-gate · cost-meter
 ```
@@ -46,6 +46,7 @@ Say "use beltline:capo to build …", or just hand over a large coding job. To c
 | `verify` | skill | Machines → scout → review with two verdicts; the author never reviews itself |
 | `ledger` | skill | `.capo/` files that survive compaction; resume; costs |
 | `lessons` | skill | Turns mistakes, corrections and costs into short rules |
+| `sweep` | skill | Removes the documents, `.capo` files, worktrees and branches of jobs proven finished; keeps an index |
 | `worker` | agent | Builds one task, test first, inside its scope |
 | `scout` | agent | Read-only finder; uses a code graph (graphify) when present |
 | `reviewer` | agent | Fresh-context review: did it do what was asked, is it done well |
@@ -60,6 +61,12 @@ Say "use beltline:capo to build …", or just hand over a large coding job. To c
 The walls apply only to the kit's own agents: you and your main session are never blocked. Only the main session
 dispatches agents and merges, because Claude Code subagents cannot start other subagents: a hierarchy of "foremen"
 would not run, so large jobs are split into areas run one after another.
+
+## Where the documents go
+
+Each job keeps its design and plan in `docs/beltline/YYYY-MM-DD-<slug>/` with a `status: active | done` header. When
+the job is finished and checked, `sweep` removes the folder (asking first unless the contract says yes) and adds a line
+to `docs/beltline/INDEX.md` with the commit to recover it from.
 
 ## Models
 

@@ -50,7 +50,10 @@ go, the capo decides alone.
    one at a time, rerunning the tests after each merge), removes its worktree and its scope block.
 5. Optional cleanup: when the review listed clutter, `beltline:simplifier` on the task, then verify level 1 again.
 6. After all tasks: `beltline:verify` on the whole branch, with all project checks and the final review.
-7. `beltline:lessons`, then one summary.
+7. `beltline:lessons`; set `status: done` in the job folder's `design.md` and `plan.md`.
+8. `beltline:sweep` for this job, as the contract says (`ask` by default: the list goes in the summary and waits for
+   the user's yes).
+9. One summary.
 
 Only the capo (the main session) dispatches agents and merges: subagents cannot start other subagents. For a very
 large job, split the plan into areas and run them one after the other, not a hierarchy.
