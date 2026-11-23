@@ -1,0 +1,18 @@
+Beltline
+Copyright (c) 2026 Giuseppe Zolli — MIT License
+
+This kit adapts ideas from:
+
+- Everything Claude Code (https://github.com/affaan-m/everything-claude-code)
+  Copyright (c) 2026 Affaan Mustafa — MIT License.
+  The council skill and the silent-failure-hunter, test-analyzer and simplifier
+  agents are rewritten adaptations of its council, silent-failure-hunter,
+  pr-test-analyzer and code-simplifier pieces. The walls follow the idea of its
+  gate hooks; the cost meter follows its cost-tracking idea.
+
+- Superpowers (https://github.com/obra/superpowers) by Jesse Vincent — MIT License.
+  The design and schematic skills hand over to its brainstorming and
+  writing-plans skills when it is installed; the status lines, the retry loop and
+  the "always pass the model" rule come from its subagent-driven-development.
+
+No source files were copied verbatim.

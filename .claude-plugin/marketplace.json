@@ -1,0 +1,14 @@
+{
+  "name": "beltline",
+  "description": "Beltline: a modular factory of skills, agents and hooks for long coding jobs with a team of agents.",
+  "owner": {
+    "name": "Giuseppe Zolli"
+  },
+  "plugins": [
+    {
+      "name": "beltline",
+      "source": "./",
+      "description": "Design until the go, then a cheap-first crew builds, machines check, reviewers judge, walls block dangerous moves."
+    }
+  ]
+}
