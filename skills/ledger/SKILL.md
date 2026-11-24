@@ -20,7 +20,9 @@ All in `.capo/` at the repository root (add `.capo/` to `.gitignore` if it is no
 | `task-N-simplify-report.md` | What the simplifier did |
 | `task-N.diff` | The diff given to read-only agents |
 | `scope.txt` | One block per running task: files its agent may edit (read by the walls) |
-| `costs.jsonl` | One line per finished agent, written by the cost meter hook |
+| `costs.jsonl` | One line per agent (its latest totals), written by the cost meter hook |
+| `lows.md` | Low findings left for the final cleanup task |
+| `logs/` | Full output of tests and builds; only summaries enter a conversation |
 | `archive/` | Ledgers of earlier jobs |
 
 ## The ledger
@@ -65,9 +67,13 @@ grep -rn "<word>" .capo/*report.md
 
 ## Costs
 
-The cost meter hook appends one JSON line per finished kit agent to `.capo/costs.jsonl`: agent, task and round (read
+The cost meter hook keeps one JSON line per kit agent in `.capo/costs.jsonl`, replaced with the latest totals when the
+same agent stops again: agent, task and round (read
 from the brief and report paths in its prompt), model, tokens. Totals per task and model:
 
 ```
-node -e "const l=require('fs').readFileSync('.capo/costs.jsonl','utf8').trim().split('\n').map(JSON.parse);const t={};for(const x of l){const k='task '+(x.task||'?')+' '+x.agent_type+' '+(x.model||'?');t[k]=t[k]||{runs:0,in:0,out:0};t[k].runs++;t[k].in+=x.input_tokens+x.cache_read_input_tokens+x.cache_creation_input_tokens;t[k].out+=x.output_tokens}console.table(t)"
+node -e "const l=require('fs').readFileSync('.capo/costs.jsonl','utf8').trim().split('\n').map(JSON.parse);const last={};for(const x of l)last[x.agent_id||Math.random()]=x;const t={};for(const x of Object.values(last)){const k='task '+(x.task||'?')+' '+x.agent_type+' '+(x.model||'?');t[k]=t[k]||{agents:0,read:0,written:0,out:0};t[k].agents++;t[k].read+=x.cache_read_input_tokens;t[k].written+=x.input_tokens+x.cache_creation_input_tokens;t[k].out+=x.output_tokens}console.table(t)"
 ```
+
+Reading from the cache is the biggest line in long tasks: every step rereads the whole context. A task with a large
+`read` grew too long (split it next time) or let long output into its context.

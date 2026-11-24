@@ -29,7 +29,7 @@ have a "Beltline table" section, or the user names other models, they win.
 All paths given to agents are **absolute paths in the main repository's `.capo/`**: `.capo/` is gitignored, so it
 does not exist inside a worktree. Below, `<capo>` means that absolute folder and K the round (1, 2, 3).
 
-Write `<capo>/task-N.md` with the task text copied from the plan, then:
+Create `<capo>/logs/` if it is missing. Write `<capo>/task-N.md` with the task text copied from the plan, then:
 
 - one line on where the task sits in the project;
 - decisions taken during the job that the plan cannot know;
@@ -45,6 +45,9 @@ Write `<capo>/task-N.md` with the task text copied from the plan, then:
   REPORT: <capo>/task-N-rK-report.md
   COMMIT: <hash or none>
   CHECKS: <one line>
+- Long output never enters your context: run tests, builds and browser checks as
+  `<command> > <capo>/logs/task-N-rK-<name>.log 2>&1; echo "exit=$?"`, then read only the summary line and the failing
+  lines (`tail -n 30`, or `grep` for the failure markers). Read files in the parts you need, not whole.
 - Touch only the files in Scope and respect Must not. If you need another file, stop with NEEDS_CONTEXT.
 - Commit on the branch you are on; never switch branches. One commit for the task; on a retry add a fix commit, never
   amend. If you stop before finishing, commit the work in progress with "WIP" in the message.
@@ -67,14 +70,21 @@ Record in the ledger: task, status `running`, BASE commit, branch, worktree, age
 Call the Agent tool with `subagent_type` (for example `beltline:worker`), `model`, `effort`, and a prompt that is
 only: the absolute path of the brief, the absolute report path for this round, and "Read the brief and do the task".
 
-**In parallel** only reads, research, or tasks on different files. For each, the capo creates the worktree itself
+**In parallel** only reads, research, or tasks on different files that also share no resource: a fixed port, a
+local database or server, a generated file, a test run that counts things (licenses, menu items) another task
+changes. The plan's Watch out lists them; when two tasks need the same one, run them in sequence or give each its own
+(another port, a copy of the script). For each, the capo creates the worktree itself
 (`git worktree add <dir> -b <task branch>`), installs dependencies there with the project's command (for example
 `npm ci`), and tells the agent to work in that folder. Merging happens after verify, in `beltline:capo`; generated
 files (for example a code graph) are regenerated after the merge, not merged.
 
 ## 4. When verify comes back red
 
-`beltline:verify` returns a list: what works, what does not (file, line, failing check).
+`beltline:verify` returns a list: what works, what does not (file, line, failing check, severity).
+
+**Only high and medium findings send a task back.** Low findings (style, naming, rare cases with no user harm) go to
+`<capo>/lows.md` with task, file and line, and the task is green. Before the final branch review, the capo sends one
+cleanup task for all of `lows.md` that still matter (or lists them in the summary). A red machine check is never low.
 
 Before any redispatch: the task's scope block is still there, and the capo makes the tree clean (it commits or
 discards leftovers itself, writing what it did in the ledger). Each round writes new files (`task-N-rK-report.md`,

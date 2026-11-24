@@ -133,6 +133,12 @@ test('cost-meter sums usage once per message, only with .capo', () => {
   assert.strictEqual(row.model, 'claude-haiku');
   assert.strictEqual(row.task, 7);
   assert.strictEqual(row.round, 2);
+  // the same agent stopping again (after a retry) replaces its line, a different agent adds one
+  run('cost-meter.js', { agent_type: 'beltline:worker', cwd: dir, agent_transcript_path: tp, agent_id: 'a1' });
+  run('cost-meter.js', { agent_type: 'beltline:reviewer', cwd: dir, agent_transcript_path: tp, agent_id: 'a2' });
+  const rows = fs.readFileSync(path.join(dir, '.capo/costs.jsonl'), 'utf8').trim().split('\n').map(JSON.parse);
+  assert.deepStrictEqual(rows.map((r) => r.agent_id), ['a1', 'a2']);
+  assert.strictEqual(rows[0].input_tokens, 30);
   const other = fs.mkdtempSync(path.join(os.tmpdir(), 'nocapo-'));
   execFileSync('git', ['init', '-q'], { cwd: other });
   const r = run('cost-meter.js', { agent_type: 'beltline:worker', cwd: other, agent_transcript_path: tp });

@@ -48,7 +48,14 @@ go, the capo decides alone.
 4. Each finished task goes through `beltline:verify` on its own branch (`BASE..<task branch>`). Red sends it back
    through the retry ladder in `beltline:recruit`. Green: the capo merges it into the working branch (parallel tasks
    one at a time, rerunning the tests after each merge), removes its worktree and its scope block.
+   **Jobs with something to look at** (a view, a layout, a chart): after the first merge that shows it, the capo takes
+   screenshots and looks at them, not only at the end: tests do not see hidden names or a cramped layout.
+   **Checkpoint**: after each merge, the ledger is complete enough to resume from it alone. If the conversation has
+   already been compacted once, or four or more tasks were merged in this session, the capo writes one line to the
+   user, once per job: "Everything is in the ledger: a new session with *resume the job* starts lighter." Then it
+   continues.
 5. Optional cleanup: when the review listed clutter, `beltline:simplifier` on the task, then verify level 1 again.
+   Before the final review, one cleanup task for what is left in `.capo/lows.md`.
 6. After all tasks: `beltline:verify` on the whole branch, with all project checks and the final review.
 7. `beltline:lessons`; set `status: done` in the job folder's `design.md` and `plan.md`.
 8. `beltline:sweep` for this job, as the contract says (`ask` by default: the list goes in the summary and waits for
@@ -62,11 +69,15 @@ large job, split the plan into areas and run them one after the other, not a hie
 
 The contract sets the mode, and it applies to every layer (the briefs carry it):
 
-- **quiet** (default): the capo does not write to the user while working, waits for long commands in the same turn,
-  and writes only when it must stop (below) and for the final summary, which also tells the errors it solved alone.
+- **quiet** (default): text between tool calls is empty. When the capo ends a turn to wait for agents, its whole
+  message is one line in this exact form, with nothing else: `⏳ <n> agents working`. With one agent and nothing else to
+  do, it waits for that agent in the foreground (no wake-ups, no line). It writes to the user only when it must stop
+  (below), for the checkpoint line, and for the final summary, which also tells the errors it solved alone.
 - **detailed**: as quiet, plus one line per closed task and per decision taken.
 
-Agents never narrate: everything goes into their report file, and they answer only with the short status.
+Agents never narrate: everything goes into their report file, and they answer only with the short status. The capo
+follows the agents' rule for long output too: test and build logs go to `.capo/logs/`, only the summary line enters
+the conversation.
 
 ## Decide instead of stopping
 

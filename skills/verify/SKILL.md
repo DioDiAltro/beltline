@@ -74,9 +74,12 @@ Review: done / skipped (why) — asked ✓/✗ · well done ✓/✗
 Live: verified / not done (why) / not needed
 Works:
 - ...
-Does not work (file:line — what breaks — failing check):
+Does not work (file:line — what breaks — failing check — high | medium | low):
 - ...
 ```
+
+RESULT is RED only for a red machine check or a high or medium finding. Low findings are listed, the result stays
+GREEN, and the capo collects them in `.capo/lows.md`.
 
 "Live" is separate: green local checks do not say the published site works. Write "verified" only after seeing it.
 

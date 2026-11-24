@@ -21,7 +21,9 @@ job folder as the design, with the header described in `beltline:design` (`beltl
 - **Global rules**: the constraints from the design and the project instructions that apply to these tasks, with exact
   values (for example "every UI text in both languages"). Workers do not read the whole project instructions.
 - **Watch out**: the five cases the design implies, that no test covers, and that would hurt users most; for each one,
-  the test that blocks it, inside the right task.
+  the test that blocks it, inside the right task. Then the **shared resources**: fixed ports, local servers or
+  databases, generated files, and checks that count things (licenses, menu entries, routes) with the tasks that
+  touch each one, so `beltline:recruit` does not run them in parallel.
 - **Contract** (below).
 
 ## Every task
@@ -36,7 +38,10 @@ job folder as the design, with the header described in `beltline:design` (`beltl
 - **Test first**: the task starts from a failing test (with superpowers, `superpowers:test-driven-development`).
 - **Type** for `beltline:recruit`: mechanical (with the complete list of points), repeated, feature, delicate.
 
-A task is the smallest piece that has its own tests and that a reviewer could reject on its own. The plan decides what
+A task is the smallest piece that has its own tests and that a reviewer could reject on its own. Keep tasks small
+enough to finish in one sitting: about five files changed, or one view. A task that is larger, or that builds a big
+view, is split; first take out its pure part (data and logic without UI, with its own tests) as a task of its own that
+can run in parallel. A long task is expensive: every step rereads everything the agent has seen so far. The plan decides what
 a worker cannot decide alone (names, values, tests); it does not write the code for it. The last task updates the
 documents the project asks for (roadmap, README, privacy notice).
 

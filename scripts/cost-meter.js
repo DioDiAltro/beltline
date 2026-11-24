@@ -50,7 +50,22 @@ try {
   }
 
   const row = { time: new Date().toISOString(), agent_type: name, agent_id: input.agent_id || null, task, round, model, ...totals };
-  fs.appendFileSync(path.join(dir, 'costs.jsonl'), JSON.stringify(row) + '\n');
+  // The transcript holds the agent's whole life, so a later stop of the same agent (after a retry or a block) carries
+  // the full totals: replace its earlier line instead of adding one, or every resumed agent would be counted twice.
+  const file = path.join(dir, 'costs.jsonl');
+  let lines = [];
+  if (fs.existsSync(file)) lines = fs.readFileSync(file, 'utf8').split('\n').filter((l) => l.trim());
+  if (row.agent_id) {
+    lines = lines.filter((l) => {
+      try {
+        return JSON.parse(l).agent_id !== row.agent_id;
+      } catch {
+        return true;
+      }
+    });
+  }
+  lines.push(JSON.stringify(row));
+  fs.writeFileSync(file, lines.join('\n') + '\n');
 } catch {
   // the meter must never break the job
 }
