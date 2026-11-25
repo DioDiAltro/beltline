@@ -10,7 +10,8 @@ decide, plus the contract that lets the job run without interrupting the user.
 
 If the superpowers plugin is installed, write the plan with `superpowers:writing-plans` and then add the fields below
 to every task; its code snippets may stay as guidance, but the fields below win where they disagree, and the plan is saved
-as `plan.md` in the job folder, not where writing-plans would put it. When writing-plans asks how to execute, the answer is: with `beltline:capo`, after the contract. Do not
+as `plan.md` in the job folder: writing-plans saves in `docs/superpowers/plans/` by default, so move the file
+there with `git mv` and add the header as soon as it is written. When writing-plans asks how to execute, the answer is: with `beltline:capo`, after the contract. Do not
 use `executing-plans` or `subagent-driven-development`.
 
 Without superpowers, write it by hand. Either way the plan is `docs/beltline/YYYY-MM-DD-<slug>/plan.md`, in the same

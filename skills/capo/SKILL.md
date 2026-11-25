@@ -34,7 +34,12 @@ go, the capo decides alone.
 3. **Hard choice between ways?** `beltline:council` before asking the user to pick.
 4. **Plan**: `beltline:schematic`. Tasks with scope, must-not, done-check, model and effort.
 5. **Contract**: `beltline:schematic` also drafts it; the user corrects it.
-6. **The go**: the user has seen design, plan and contract, then says go. Nothing is built before (reading and
+6. **Job folder check**, before showing the go: `design.md` and `plan.md` must be in `docs/beltline/YYYY-MM-DD-<slug>/`,
+   each starting with the Beltline header (`beltline: design|plan`, `job: YYYY-MM-DD-<slug>`, `status: active`). Other
+   skills (superpowers' brainstorming and writing-plans) save in their own folders by default: if a document is
+   elsewhere, move it with `git mv`, add the header, fix any link to the old path, and commit. Never copy: one
+   document, one place.
+7. **The go**: the user has seen design, plan and contract, then says go. Nothing is built before (reading and
    exploring is fine). If the conversation is long, ask the user to run `/compact` together with the go: everything
    is on files.
 

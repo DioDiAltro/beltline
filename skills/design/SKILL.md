@@ -8,9 +8,10 @@ description: Use when a coding job needs to be understood and designed with the 
 Turn a rough request into a design document the user approved. Questions happen here, so the build can run without
 them.
 
-If the superpowers plugin is installed, run `superpowers:brainstorming` as it is, but save its design document as
-`design.md` in the job folder (below) instead of its own folder, and stop when it would hand over to its own planning:
-the plan is `beltline:schematic`. Without superpowers, follow the steps below.
+If the superpowers plugin is installed, run `superpowers:brainstorming` as it is, and stop when it would hand over to
+its own planning: the plan is `beltline:schematic`. Brainstorming saves the design in its own folder
+(`docs/superpowers/specs/`): as soon as it is written, move it with `git mv` to `design.md` in the job folder (below)
+and add the header. The job folder is the only place Beltline documents live; `beltline:capo` checks it before the go. Without superpowers, follow the steps below.
 
 ## The job folder
 
