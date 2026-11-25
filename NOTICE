@@ -8,11 +8,15 @@ This kit adapts ideas from:
   The council skill and the silent-failure-hunter, test-analyzer and simplifier
   agents are rewritten adaptations of its council, silent-failure-hunter,
   pr-test-analyzer and code-simplifier pieces. The walls follow the idea of its
-  gate hooks; the cost meter follows its cost-tracking idea.
+  gate hooks; the cost meter follows its cost-tracking idea; the context meter
+  follows the idea of its strategic-compact hook (reading the context size from
+  the transcript); the "checks intact" check follows its config-protection idea.
 
 - Superpowers (https://github.com/obra/superpowers) by Jesse Vincent — MIT License.
   The design and schematic skills hand over to its brainstorming and
   writing-plans skills when it is installed; the status lines, the retry loop and
-  the "always pass the model" rule come from its subagent-driven-development.
+  the "always pass the model" rule come from its subagent-driven-development, as
+  do the ideas of a table of shared files before the first task, of findings the
+  reviewer cannot verify from the diff, and of one workspace per plan.
 
 No source files were copied verbatim.

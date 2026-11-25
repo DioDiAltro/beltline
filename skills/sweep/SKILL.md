@@ -13,7 +13,8 @@ never removed: when in doubt, keep it and say why.
 Only Beltline's own leftovers:
 
 - the job folder `docs/beltline/YYYY-MM-DD-<slug>/` (design and plan; see `beltline:design`);
-- that job's files in `.capo/` (`task-*`, `scope.txt`), never `costs.jsonl`, `archive/` or another job's files;
+- that job's folder `.capo/<job>/`, and `.capo/active` when it names the job (for a job of Beltline 0.2, its
+  `task-*` files, `scope.txt` and `lows.md` directly in `.capo/`); never `.capo/archive/` or another job's files;
 - worktrees and task branches listed in that job's ledger, once merged.
 
 Anything else (other documents, roadmaps, notes, the project's own files) is out of reach, even if it looks old. To
@@ -23,32 +24,33 @@ clean those, the user asks for it file by file.
 
 1. **Pick the jobs.** At the end of a capo job: that job. When the user asks: every folder in `docs/beltline/` except
    `INDEX.md`, one at a time.
-2. **Machine check.** Run the check script that sits next to this file:
+2. **Machine check.**
 
    ```
-   node "${CLAUDE_SKILL_DIR}/check.js" docs/beltline/<job>
+   node "${CLAUDE_PLUGIN_ROOT}/skills/sweep/check.js" docs/beltline/<job>
    ```
 
-   (If the variable is empty, use the path of the folder this SKILL.md was loaded from.) It changes nothing and prints
-   a JSON report: both documents marked `status: done`, the folder committed and holding only `design.md` and
-   `plan.md`, a ledger that mentions the job with every task `done`, every task branch merged into HEAD, and no other
-   file pointing at the folder. Exit code 0 means every check is green; `remove` lists what may go.
-3. **Done-checks again.** Read the plan and rerun its done-checks (or the project's test command if they are many).
-   Red means the work is not really done: keep everything and report it.
+   It changes nothing and prints a JSON report: both documents marked `status: done`, the folder committed and holding
+   only `design.md` and `plan.md`, a ledger whose `Job:` line names the job with every task `done`, every task branch
+   merged into HEAD, and no other file pointing at the folder. Exit code 0 means every check is green; `remove` lists
+   what may go.
+3. **Done-checks again.** Read the plan and rerun its done-checks (or the project's test command if they are many),
+   with the output in a log. Red means the work is not really done: keep everything and report it.
 4. **Lessons first.** If `beltline:lessons` has not run for this job, run it before anything in `.capo/` disappears:
-   the ledger and the reports are its evidence.
+   the ledger, the reports and the costs are its evidence.
 5. **Ask or go.** The contract's "Cleanup at the end" decides. `ask` (the default, and always when the user asked
    without a contract): show the list (what, why it is finished, how to get it back) and wait for a yes. `yes`: go on.
 6. **Remove**, in this order:
    - worktrees: `git worktree remove <path>` (never with `--force`: if it refuses, the worktree has unsaved work,
      keep it and report it);
    - merged task branches: `git branch -d <branch>` (lowercase `-d`: git refuses unmerged branches);
-   - the job's `.capo/` files; append a one-line cost total for the job to the index first (from `costs.jsonl`);
+   - the job's `.capo/` files, after taking the cost line for the index:
+     `node "${CLAUDE_PLUGIN_ROOT}/scripts/costs.js" .capo/<job> --line`;
    - the job folder: `git rm -r docs/beltline/<job>`, then one commit `sweep: <job>`.
 7. **Index.** Add one line to `docs/beltline/INDEX.md` (create it if missing) and commit it with the removal:
 
    ```
-   - YYYY-MM-DD-<slug> — what was built, in one line — removed in <commit hash> (git show <hash>^:docs/beltline/<job>/design.md) — cost: <tokens>
+   - YYYY-MM-DD-<slug> — what was built, in one line — removed in <commit hash> (git show <hash>^:docs/beltline/<job>/design.md) — cost: <the cost line>
    ```
 
    The documents stay in git history: the index says where to find them.

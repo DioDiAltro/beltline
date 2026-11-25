@@ -43,15 +43,24 @@ function ledgerRows(text) {
   return rows;
 }
 
+// A ledger belongs to a job only when its own "Job:" line names it; mentioning the job elsewhere does not count.
+function ledgerJob(text) {
+  const m = text.match(/^Job:\s*([\w.-]+)/m) || text.match(/^#\s*Beltline ledger\s*[—-]\s*job:\s*([\w.-]+)/im);
+  return m ? m[1] : null;
+}
+
 function findLedger(root, job) {
   const capo = path.join(root, '.capo');
-  const candidates = [path.join(capo, 'ledger.md')];
+  const candidates = [
+    { file: path.join(capo, job, 'ledger.md'), layout: 'job' },
+    { file: path.join(capo, 'ledger.md'), layout: 'flat' },
+  ];
   const archive = path.join(capo, 'archive');
-  if (fs.existsSync(archive)) for (const f of fs.readdirSync(archive)) candidates.push(path.join(archive, f));
-  for (const f of candidates) {
-    if (!fs.existsSync(f) || !fs.statSync(f).isFile()) continue;
-    const text = fs.readFileSync(f, 'utf8');
-    if (text.includes(job)) return { file: f, text };
+  if (fs.existsSync(archive)) for (const f of fs.readdirSync(archive)) candidates.push({ file: path.join(archive, f), layout: 'archive' });
+  for (const c of candidates) {
+    if (!fs.existsSync(c.file) || !fs.statSync(c.file).isFile()) continue;
+    const text = fs.readFileSync(c.file, 'utf8');
+    if (ledgerJob(text) === job) return { ...c, text };
   }
   return null;
 }
@@ -92,7 +101,7 @@ function main(arg, repo) {
   const branches = [];
   const worktrees = [];
   if (!ledger) {
-    add('ledger found', false, 'no ledger mentions this job: tasks cannot be checked');
+    add('ledger found', false, 'no ledger whose "Job:" line names this job: tasks cannot be checked');
   } else {
     const rows = ledgerRows(ledger.text);
     const open = rows.filter((r) => (r.status || '').toLowerCase() !== 'done');
@@ -118,11 +127,20 @@ function main(arg, repo) {
   const refs = git(root, ['grep', '-l', '-F', rel, '--', '.', `:!${rel}`, ':!docs/beltline/INDEX.md']);
   add('no references', !refs, refs ? `referenced by: ${refs.split('\n').join(', ')}` : '');
 
+  // 4. What of .capo/ goes: the job's own folder (0.3), or the task files of a flat .capo/ whose ledger is this job's.
   const capoFiles = [];
   const capo = path.join(root, '.capo');
-  if (ledger && path.dirname(ledger.file) === capo && fs.existsSync(capo)) {
-    for (const f of fs.readdirSync(capo)) if (/^task-\d+/.test(f) || f === 'scope.txt') capoFiles.push(`.capo/${f}`);
+  if (ledger && ledger.layout === 'job') capoFiles.push(`.capo/${job}/`);
+  if (ledger && ledger.layout === 'flat') {
+    for (const f of fs.readdirSync(capo)) if (/^task-\d+/.test(f) || f === 'scope.txt' || f === 'lows.md') capoFiles.push(`.capo/${f}`);
   }
+  let active = null;
+  try {
+    active = fs.readFileSync(path.join(capo, 'active'), 'utf8').trim();
+  } catch {
+    active = null;
+  }
+  if (active === job) capoFiles.push('.capo/active');
 
   const ok = checks.every((c) => c.ok);
   return {
@@ -144,4 +162,4 @@ if (require.main === module) {
   process.exit(report.ok ? 0 : 1);
 }
 
-module.exports = { main, ledgerRows, header };
+module.exports = { main, ledgerRows, header, ledgerJob };

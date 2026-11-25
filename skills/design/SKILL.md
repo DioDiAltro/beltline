@@ -8,10 +8,10 @@ description: Use when a coding job needs to be understood and designed with the 
 Turn a rough request into a design document the user approved. Questions happen here, so the build can run without
 them.
 
-If the superpowers plugin is installed, run `superpowers:brainstorming` as it is, and stop when it would hand over to
-its own planning: the plan is `beltline:schematic`. Brainstorming saves the design in its own folder
-(`docs/superpowers/specs/`): as soon as it is written, move it with `git mv` to `design.md` in the job folder (below)
-and add the header. The job folder is the only place Beltline documents live; `beltline:capo` checks it before the go. Without superpowers, follow the steps below.
+If the superpowers plugin is installed, run `superpowers:brainstorming`, and before invoking it state the user's
+preference, which it follows: the design is saved as `design.md` in the job folder below, with the Beltline header.
+Stop when it would hand over to its own planning: the plan is `beltline:schematic`. If it saved the design elsewhere
+anyway, move it with `git mv` and add the header. Without superpowers, follow the steps below.
 
 ## The job folder
 
@@ -29,7 +29,6 @@ status: active | done
 Nothing else goes in that folder, and Beltline documents go nowhere else: this is what lets `beltline:sweep` remove a
 finished job safely. The capo sets `status: done` when the job ends.
 
-
 ## Steps
 
 1. **Look before asking.** Read what the user pointed at and the project documents about it. For the code, ask the
@@ -38,7 +37,8 @@ finished job safely. The capo sets `status: done` when the job ends.
 2. **The why first.** What should it achieve, for whom, and what would count as a failure even if it works.
 3. **One question at a time**, only when the answer changes what gets built. For everything else, propose with a
    reason.
-4. **Real examples beat questions.** If similar products or features exist, search the web and show them.
+4. **Real examples beat questions.** If similar products, features or libraries exist, search the web and show them:
+   adopting or extending one often beats building it.
 5. **Play back** each part you understood in a few lines ("I understood: ..."), then move on.
 6. **Ways to build it.** In a message of its own: two or three ways, what each costs, which one you recommend. If the
    choice is genuinely hard, run `beltline:council` first and show its synthesis. The user picks.

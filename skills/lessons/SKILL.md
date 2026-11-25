@@ -1,18 +1,20 @@
 ---
 name: lessons
-description: Use at the end of a capo job, when the user corrects how Claude works in a project, or when they ask what was learned or why tasks kept climbing the model ladder; turns mistakes and corrections into short rules.
+description: Use at the end of a capo job, when the user corrects how Claude works in a project, or when they ask what was learned, why tasks kept climbing the model ladder, or where the tokens went; turns mistakes, corrections and costs into short rules.
 ---
 
 # Lessons
 
 Every job leaves data: which tasks climbed the ladder, which questions came after the go, which errors repeated, what
-the user corrected, what each task cost. This piece turns them into a few rules the next job uses.
+the user corrected, what each task cost and what filled the contexts. This piece turns them into a few rules the next
+job uses.
 
 ## Sources
 
-- `.capo/ledger.md`: models, effort, rounds, blocked tasks, decisions;
-- `.capo/task-N-rK-report.md` and `.capo/task-N-rK-verify.md`: what failed in each round and why;
-- `.capo/costs.jsonl`: tokens per agent and model;
+- `.capo/<job>/ledger.md`: models, effort, rounds, blocked tasks, decisions;
+- `.capo/<job>/task-N-rK-report.md`, `-checks.md` and `-verify.md`: what failed in each round and why;
+- `node "${CLAUDE_PLUGIN_ROOT}/scripts/costs.js" .capo/<job>`: cost per task, model and agent, the capo included, the
+  largest contexts and the largest tool results;
 - the user's corrections in the conversation ("no, do it this way").
 
 ## A lesson
@@ -42,15 +44,18 @@ Low-confidence lessons that saw no new evidence in three jobs are removed: the f
 
 ## At the end of a job
 
-1. Read ledger, verification reports and costs.
+1. Read ledger, verification reports and the cost report.
 2. For each task that climbed, got blocked, cost much more than similar ones, or raised a question after the go: will
    the situation repeat? If yes, a lesson (new, or new evidence for an existing one).
-3. Update `.claude/lessons.md`, then any proposal for the table or the kit.
-4. In the final summary: each new lesson in one line, and the proposals waiting for the user's yes.
+3. Context: for the largest tool results and the largest contexts, name what filled them (a file read whole, a log
+   in the conversation, a task too long) and the one thing that avoids it next time.
+4. Update `.claude/lessons.md`, then any proposal for the table or the kit.
+5. In the final summary: each new lesson in one line, and the proposals waiting for the user's yes.
 
 | Mistake | Instead |
 |---|---|
 | A lesson as long as a story | When, do, evidence: three lines |
 | "Be more careful" | One precise action in a recognizable situation |
+| "Use fewer tokens" | The file or output that filled the context, and what to do instead |
 | Changing the table or the kit alone | Propose it to the user |
 | Copying what the project instructions already say | Only new things |
