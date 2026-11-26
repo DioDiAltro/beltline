@@ -35,6 +35,38 @@ test('costs: list prices per model, last line per agent, capo included', () => {
   assert.match(spawnSync('node', [path.join(SCRIPTS, 'costs.js'), dir, '--line'], { encoding: 'utf8' }).stdout, /^\$4\.10 at list prices/);
 });
 
+test('worktree: a task checkout next to the repo, with linked dependencies, removed only when clean', () => {
+  const parent = fs.mkdtempSync(path.join(os.tmpdir(), 'wt-'));
+  const dir = path.join(parent, 'app');
+  fs.mkdirSync(dir);
+  g(dir, 'init', '-q', '-b', 'main');
+  fs.writeFileSync(path.join(dir, '.gitignore'), 'node_modules/\n.capo/\n');
+  g(dir, 'add', '-A'); g(dir, 'commit', '-qm', 'base');
+  const base = g(dir, 'rev-parse', 'HEAD');
+  fs.mkdirSync(path.join(dir, 'node_modules', 'dep'), { recursive: true });
+  fs.writeFileSync(path.join(dir, 'node_modules', 'dep', 'index.js'), 'module.exports = 1;\n');
+  const wt = (...a) => JSON.parse(spawnSync('node', [path.join(SCRIPTS, 'worktree.js'), ...a], { encoding: 'utf8' }).stdout);
+  const made = wt('add', '--repo', dir, '--job', '2026-11-26-x', '--task', '3', '--branch', 'x/t3', '--base', base);
+  assert.strictEqual(made.dir, path.join(parent, 'app-worktrees', '2026-11-26-x-t3'));
+  assert.strictEqual(made.deps, 'link');
+  assert.ok(fs.existsSync(path.join(made.dir, 'node_modules', 'dep', 'index.js')), 'dependencies reachable');
+  assert.strictEqual(g(made.dir, 'rev-parse', '--abbrev-ref', 'HEAD'), 'x/t3');
+  assert.strictEqual(g(dir, 'status', '--porcelain'), '', 'the main checkout stays clean');
+  // uncommitted work: git refuses, and the real dependencies are still there
+  fs.writeFileSync(path.join(made.dir, 'work.js'), 'x\n');
+  const refused = wt('remove', '--repo', dir, '--dir', made.dir);
+  assert.strictEqual(refused.removed, false);
+  assert.ok(fs.existsSync(path.join(dir, 'node_modules', 'dep', 'index.js')));
+  g(made.dir, 'add', '-A'); g(made.dir, 'commit', '-qm', 'work');
+  assert.deepStrictEqual(wt('remove', '--repo', dir, '--dir', made.dir), { removed: true });
+  assert.ok(!fs.existsSync(made.dir));
+  assert.ok(fs.existsSync(path.join(dir, 'node_modules', 'dep', 'index.js')), 'removing the link left the real folder');
+  // an install command instead of the link
+  const inst = wt('add', '--repo', dir, '--job', '2026-11-26-x', '--task', '4', '--branch', 'x/t4', '--base', base, '--deps', 'node -e "require(\'fs\').mkdirSync(\'node_modules\')"');
+  assert.strictEqual(inst.deps, 'installed');
+  assert.ok(!fs.lstatSync(path.join(inst.dir, 'node_modules')).isSymbolicLink());
+});
+
 test('bite: new tests that fail on BASE bite, tests that pass there do not, and the checkout is removed', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bite-'));
   g(dir, 'init', '-q', '-b', 'main');

@@ -38,7 +38,7 @@ Remote branch at start: <commit>
 
 | Task | Status | BASE | Branch | Worktree | Agent | Model | Effort | Rounds |
 |---|---|---|---|---|---|---|---|---|
-| 1 | done | abc123 | job/t1 | — | worker | haiku | low | 1 |
+| 1 | done | abc123 | job/t1 | ../repo-worktrees/<job>-t1 | worker | haiku | low | 1 |
 
 ## Decisions
 - Decision: what — why — cost if wrong

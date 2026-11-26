@@ -78,10 +78,19 @@ do the task".
 **In parallel** only reads, research, or tasks that share no file and no resource: a fixed port, a local database or
 server, a generated file, a test run that counts things (licenses, menu items) another task changes. The plan's table
 of shared files and its Watch out list them; tasks that share one run in sequence or get their own copy (another port).
-For each parallel task the capo creates the worktree itself, outside the repository so the project's tools do not see
-it (`git worktree add <repo>/../<repo name>-worktrees/<task> -b <task branch>`), installs dependencies there with the
-project's command (for example `npm ci`), and gives its absolute path as the checkout. Merging happens after verify,
-in `beltline:capo`; generated files (for example a code graph) are regenerated after the merge, not merged.
+**Every task works in its own worktree**, also when tasks run one at a time: the main checkout stays clean while agents
+work (Claude Code on the web wakes the capo whenever it is not). Before dispatching, the capo creates it next to the
+repository, where the project's tools do not see it:
+
+```
+node "${CLAUDE_PLUGIN_ROOT}/scripts/worktree.js" add --repo <root> --job <job> --task N --branch <task branch> --base <BASE>
+```
+
+It links the main checkout's dependencies, which is fast. For parallel tasks, or a task that changes dependencies,
+add `--deps "<the project's install command>"` (for example `--deps "npm ci"`): one dependency folder does not survive
+two builds at once. The printed `dir` is the task's checkout, in the brief, in the scope block and in the ledger.
+Merging happens after verify, in `beltline:capo`; generated files (for example a code graph) are regenerated after the
+merge, not merged.
 
 ## 4. When verify comes back red
 

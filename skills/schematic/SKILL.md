@@ -65,6 +65,7 @@ Decide now what would otherwise block later. Propose values; the user corrects t
 | Telling the user | `quiet` |
 | Working branch | a branch for the job, or the one the project uses for previews |
 | Allowed at the end (yes/no each) | commit yes; push to the working branch; merge into other branches no; preview build; publish no |
+| Push the working branch | at the end; after each merge in Claude Code on the web, whose end-of-turn check wakes the capo while commits are unpushed |
 | Already allowed | web search; new libraries no; external services no; database migrations no; deleting files no |
 | Compaction | at about 200K tokens (`autoCompactWindow` in the settings), the ledger keeps the state |
 | Cleanup at the end | `ask`: `beltline:sweep` shows what it would remove and waits; `yes`: it removes after its checks |

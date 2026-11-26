@@ -41,8 +41,9 @@ clean those, the user asks for it file by file.
 5. **Ask or go.** The contract's "Cleanup at the end" decides. `ask` (the default, and always when the user asked
    without a contract): show the list (what, why it is finished, how to get it back) and wait for a yes. `yes`: go on.
 6. **Remove**, in this order:
-   - worktrees: `git worktree remove <path>` (never with `--force`: if it refuses, the worktree has unsaved work,
-     keep it and report it);
+   - worktrees: `node "${CLAUDE_PLUGIN_ROOT}/scripts/worktree.js" remove --repo <root> --dir <path>` (it removes the
+     dependency link, then the worktree without `--force`: if git refuses, the worktree has unsaved work, keep it and
+     report it);
    - merged task branches: `git branch -d <branch>` (lowercase `-d`: git refuses unmerged branches);
    - the job's `.capo/` files, after taking the cost line for the index:
      `node "${CLAUDE_PLUGIN_ROOT}/scripts/costs.js" .capo/<job> --line`;

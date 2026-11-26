@@ -67,8 +67,13 @@ at the end.
 | `context-meter` | hook | Tells the capo once at 150K, 250K, 400K and 600K tokens to checkpoint and read less |
 | `context-restore` | hook | After a compaction or in a new session, points Claude at the ledger of the running job |
 
-Two scripts back them: `scripts/costs.js` (the cost report of a job) and `scripts/bite.js` (do the new tests fail on
-the code before the task?).
+Three scripts back them: `scripts/costs.js` (the cost report of a job), `scripts/bite.js` (do the new tests fail on the
+code before the task?) and `scripts/worktree.js` (a checkout for each task, next to the repository, with the
+dependencies linked).
+
+Every task works in its own worktree, so the main checkout stays clean while agents work. Claude Code on the web wakes
+the session at the end of every turn while there are uncommitted changes or unpushed commits; there the contract can
+push the working branch after each merge, so the capo waits in silence: `⏳ 1 · 3/14` (agents working · tasks done).
 
 The walls apply only to the kit's own agents: you and your main session are never blocked. They are guardrails
 against habits and mistakes, not a sandbox: a program written to get around them could. Only the main session

@@ -43,6 +43,9 @@ go, the capo decides alone.
      copy: one document, one place.
    - `node --version` works. Without Node.js the walls and meters do not run at all (a hook that cannot start does
      not block): say so to the user with the go question.
+   - Claude Code on the web (`~/.claude/stop-hook-git-check.sh` exists) wakes the session at the end of every turn while
+     the repository has uncommitted changes or unpushed commits: propose "Push the working branch: after each merge" in
+     the contract, so the capo can wait in silence.
    - The compaction window: a long job should compact well before the model's limit. If neither the project's nor the
      user's settings set `autoCompactWindow`, propose `"autoCompactWindow": 200000` in `.claude/settings.json` (or
      `/autocompact 200k`); the ledger makes compaction safe.
@@ -52,6 +55,13 @@ go, the capo decides alone.
 
 ## Part 2 — Build without interrupting
 
+**Quiet mode** (the default; the contract may set `detailed`): between tool calls you write nothing. A turn that waits
+for agents ends with this one line and nothing else, whatever the language of the project:
+`⏳ <agents working> · <tasks done>/<tasks>` (for example `⏳ 1 · 3/14`). If something wakes you while agents are working
+(a message that changes nothing, or a check of the environment asking to commit or push), do what the contract allows
+and end again with the same line, without explanations. You write to the user only to stop (below), for the checkpoint
+line, and for the final summary.
+
 1. Open the ledger (`beltline:ledger`): write `.capo/active`, the contract and the tasks.
 2. **Crew or alone?** One or two small tasks, or all on the same files: the capo does them or sends one worker, same
    checks. Three or more tasks, or independent ones: the crew.
@@ -60,7 +70,8 @@ go, the capo decides alone.
 4. Each finished task goes through `beltline:verify` on its own branch (`BASE..<task branch>`): the inspector runs the
    machines, then the hunters and the reviewer. Red goes back through the retry ladder of `beltline:recruit`. Green:
    the capo merges it into the working branch (parallel tasks one at a time, tests after each merge, output in a log),
-   removes its worktree and its scope block.
+   pushes the working branch if the contract says "after each merge", then removes the worktree
+   (`node "${CLAUDE_PLUGIN_ROOT}/scripts/worktree.js" remove --repo <root> --dir <worktree>`) and the scope block.
    **Jobs with something to look at** (a view, a layout, a chart): after the first merge that shows it, a reviewer
    takes the screenshots and judges them; the capo opens an image only when a finding needs its decision.
    **Checkpoint**: after each merge the ledger is complete enough to resume from it alone. If the conversation has
@@ -95,10 +106,8 @@ rereads all of it. What enters it stays until a compaction.
 
 The contract sets the mode, and it applies to every layer (the briefs carry it):
 
-- **quiet** (default): text between tool calls is empty. When the capo ends a turn to wait for agents, its whole
-  message is one line in this exact form, with nothing else: `⏳ <n> agents working`. With one agent and nothing else
-  to do, it waits for that agent in the foreground when the session allows it. It writes to the user only when it
-  must stop (below), for the checkpoint line, and for the final summary, which also tells the errors it solved alone.
+- **quiet** (default): the box at the start of Part 2. With one agent and nothing else to do, the capo waits for it in
+  the foreground when the session allows it. The final summary also tells the errors it solved alone.
 - **detailed**: as quiet, plus one line per closed task and per decision taken.
 
 Agents never narrate: everything goes into their report file, and they answer only with the short status.

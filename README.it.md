@@ -71,8 +71,14 @@ Le skill e gli agenti sono scritti in inglese, ma Claude parla con te nella tua 
 | `context-meter` | hook | Avvisa il capo una volta a 150K, 250K, 400K e 600K token di aggiornare il registro e leggere meno |
 | `context-restore` | hook | Dopo una compattazione o in una sessione nuova, indica a Claude il registro del lavoro in corso |
 
-Due script li accompagnano: `scripts/costs.js` (il rapporto dei costi di un lavoro) e `scripts/bite.js` (i test nuovi
-falliscono sul codice di prima del compito?).
+Tre script li accompagnano: `scripts/costs.js` (il rapporto dei costi di un lavoro), `scripts/bite.js` (i test nuovi
+falliscono sul codice di prima del compito?) e `scripts/worktree.js` (una copia del codice per ogni compito, accanto al
+repository, con le dipendenze collegate).
+
+Ogni compito lavora nel suo worktree, così la copia principale resta pulita mentre gli agenti lavorano. Claude Code sul
+web risveglia la sessione alla fine di ogni turno finché ci sono modifiche non nel commit o commit non caricati; lì il
+contratto può caricare il ramo di lavoro dopo ogni unione, così il capo aspetta in silenzio: `⏳ 1 · 3/14` (agenti al
+lavoro · compiti fatti).
 
 I muri valgono solo per gli agenti del kit: tu e la tua sessione principale non venite mai bloccati. Sono protezioni
 contro abitudini ed errori, non una sandbox: un programma scritto apposta per aggirarli ci riuscirebbe. Solo la
